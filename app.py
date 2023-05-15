@@ -4,11 +4,12 @@ from pymongo.collection import Collection
 
 
 
+
 # mongo config
 mongodb_host = 'localhost'
 mongodb_port = 27017
-database_name = 'books'
-collection_name = 'science_books'
+database_name = 'tasks'
+collection_name = 'user_tasks'
 
 mongo = MongoDb()
 # connection
