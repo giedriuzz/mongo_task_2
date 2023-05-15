@@ -23,6 +23,15 @@ collection = db[collection_name]
 # }
 # mongo.insert_create_document(collection=collection, document=document)
 
+document = {
+    "task_name": "Wash car",
+    "task_description": 'Wash car only with water',
+    "task_status": "started",
+    "user_name": "Tadas Tadas",
+    "user_email": "tadas@gmail.com",
+}
+mongo.insert_create_document(collection=collection, document=document)
+
 # Read
 query = {"age": 15}
 results = mongo.find_documents(collection=collection, query=query)
