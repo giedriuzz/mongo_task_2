@@ -3,13 +3,11 @@ from main import MongoDb
 from pymongo.collection import Collection
 
 
-
-
 # mongo config
-mongodb_host = 'localhost'
+mongodb_host = "localhost"
 mongodb_port = 27017
-database_name = 'tasks'
-collection_name = 'user_tasks'
+database_name = "tasks"
+collection_name = "user_tasks"
 
 mongo = MongoDb()
 # connection
@@ -26,7 +24,7 @@ collection = db[collection_name]
 
 document = {
     "task_name": "Wash car",
-    "task_description": 'Wash car only with water',
+    "task_description": "Wash car only with water",
     "task_status": "started",
     "user_name": "Tadas Tadas",
     "user_email": "tadas@gmail.com",
@@ -42,6 +40,3 @@ print(results)
 # get collections
 collections = mongo.get_database_collection(db, collection_name)
 print(collections)
-
-
-
