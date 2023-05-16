@@ -1,19 +1,26 @@
 import unittest
 from connect.connect import Connect
 from main import MongoDb
+from pymongo import MongoClient
 
 
 class UnitTestsOfMain(unittest.TestCase):
     def setUp(self):
         self.mongo = MongoDb()
-        mongodb_host = "localhost"
-        mongodb_port = 27017
-        database_name = "Tasks"
-        collection_name = "user_tasks"
+        self.mongodb_host = "localhost"
+        self.mongodb_port = 27017
+        self.database_name = "Tasks"
+        self.collection_name = "user_tasks"
         connects = Connect()
         # connection
-        db = connects.connect_to_mongodb(mongodb_host, mongodb_port, database_name)
-        self.collection = db[collection_name]
+        self.db = connects.connect_to_mongodb(
+            self.mongodb_host, self.mongodb_port, self.database_name
+        )
+        self.collection = self.db[self.collection_name]
+
+        self.query = {"task_name": "Wash car"}
+        self.update = {"task_name": "Not wash a car, wash a bike"}
+        self.client = MongoClient(self.mongodb_host, self.mongodb_port)
 
     def test_insert_create_document(self):
         result = {
@@ -25,55 +32,34 @@ class UnitTestsOfMain(unittest.TestCase):
         }
         self.assertIsNotNone(self.mongo.insert_create_document(self.collection, result))
 
+    def test_find_documents(self):
+        self.assertIsNotNone(self.mongo.find_documents(self.collection, self.query))
 
-# def test_sum_of_list(self):
-#     self.assertEqual(self.task.sum_of_list([120, 1, 5, 2, 2]), 130)
-#     self.assertNotEqual(self.task.sum_of_list([120, 1, 45, 78, 96]), 121)
-#     with self.assertRaises(TypeError):
-#         self.task.sum_of_list([14, 185, "14"])  # type:ignore
+    def test_update_document(self):
+        self.assertIsNotNone(
+            self.mongo.update_document(self.collection, self.query, self.update)
+        )
+        self.assertGreaterEqual(
+            self.mongo.update_document(self.collection, self.query, self.update), 0
+        )
 
-# def test_max_value(self):
-#     self.assertEqual(self.task.max_value(14, 1444, 145, 45), 1444)
-#     self.assertNotIn(self.task.max_value(14), [25, 45])
-#     self.assertGreater(self.task.max_value(14, 12, 17), 10)
+    def test_delete_documents(self):
+        self.assertGreaterEqual(
+            self.mongo.delete_documents(self.collection, self.update), 0
+        )
 
-# def test_reversing_string(self):
-#     self.assertEqual(self.task.reversing_string("hello"), "olleh")
-#     self.assertNotEqual(self.task.reversing_string("hello"), "hello")
+    def test_get_database_collection(self):
+        collection_name = "fake"
+        fake_collection = self.db[collection_name]
+        self.assertEqual(
+            self.mongo.get_database_collection(self.db, self.collection_name),
+            self.collection,
+        )
+        with self.assertRaises(TypeError):
+            self.mongo.get_database_collection(self.db, fake_collection)  # type:ignore
 
-# def test_info_about_sentence(self):
-#     self.assertEqual(self.task.info_about_sentence("He11o   World!"), (2, 6, 2, 2))
-#     with self.assertRaises(TypeError):
-#         self.task.info_about_sentence(1452587)  # type:ignore
+    def test_list_databases(self):
+        self.assertIsNotNone(self.mongo.list_databases(self.client))
 
-# def test_unique_only(self):
-#     self.assertEqual(self.task.unique_only(1, 2, 3, 3), ([1, 2, 3]))
-#     self.assertIsNot(self.task.unique_only(4), 1)
-
-# def test_is_it_prime_number(self):
-#     self.assertEqual(self.task.is_it_prime_number(7), True)
-#     self.assertEqual(self.task.is_it_prime_number(8), False)
-#     self.assertFalse(self.task.is_it_prime_number(0), False)
-#     with self.assertRaises(TypeError):
-#         self.task.is_it_prime_number("1452587")  # type:ignore
-
-# def test_reversed_sentence(self):
-#     self.assertEqual(self.task.reversed_sentence("Hello World!"), "World! Hello")
-#     self.assertIsNot(self.task.reversed_sentence("Hello World!"), "Hello World!")
-#     self.assertNotEqual(self.task.reversed_sentence("Hello World!"), "Hello World!")
-
-# def test_is_leap(self):
-#     self.assertEqual(self.task.is_leap(2000), True)
-#     self.assertNotEqual(self.task.is_leap(2010), True)
-#     self.assertFalse(self.task.is_leap(2100), False)
-#     with self.assertRaises(TypeError):
-#         self.task.is_leap("1452587")  # type:ignore
-
-# @freeze_time("2023-05-09")
-# def test_check_data(self):
-#     fake_data: str = "2000-01-01"
-#     self.assertEqual(self.task.check_data(fake_data), datetime.timedelta(days=8529))
-#     self.assertEqual(
-#         ((self.task.check_data(fake_data) // 365)),
-#         datetime.timedelta(days=23, seconds=31719, microseconds=452054),
-#     )
+    def test_list_collections(self):
+        self.assertIsNotNone(self.mongo.list_collections(self.db))  # type:ignore
