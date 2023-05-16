@@ -10,23 +10,27 @@ class MongoDb:
         self.collection = self.db[collection_name]
         
     # Create(Insert)
-    def insert_create_document(self, collection: Collection, document: Dict) -> str:
+    def insert_create_document(self, document: Dict) -> str:
         result = self.collection.insert_one(document)
         return str(result.inserted_id)
     
     # Read
-    def find_documents(self, query: str) -> List[Dict[str, Any]]:
+    def find_documents(self) -> List[Dict[str, Any]]:
         # documents = self.collection.find_one(query)
         return list(self.collection.find())
     
     # Update
-    def update_document(self, task_id: str, status: str) -> int:
-        result = self.collection.update_one({'_id': task_id}, {'$set': {'task_status': status}})
+    def update_document(self, task_id: str, status: Dict[str, Any]) -> int:
+        result = self.collection.update_one({"_id": task_id}, {"$set": status})
         return result.modified_count
     
     # Delete
-    def delete_documents(self, collection: Collection, query: Dict) -> int:
-        result = collection.delete_many(query)
+    def delete_document(self, task_id: str) -> int:
+        result = self.collection.delete_one({'_id': task_id})
+        return result.deleted_count
+    
+    def delete_documents(self, query: Dict) -> int:
+        result = self.collection.delete_many(query)
         return result.deleted_count
     
     def get_database_collection(self, database: Database, collection_name: str) -> Collection:

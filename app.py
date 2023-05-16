@@ -37,30 +37,35 @@ def create_new_task() -> None:
         "user_name": u_name, 
         "user_email": u_email, 
     }
-    task = mongo.insert_create_document(collection=collection, document=in_task)
+    task = mongo.insert_create_document(document=in_task)
 
     print(f"Task added with ID: {task}")  
 
 
 def view_all_tasks():
-    slc_email = str(input("Enter email, which tasks show: "))
-    collections = mongo.find_documents(query=slc_email)
+    tasks = mongo.find_documents()
     print("Your tasks:")
-    for collect in collections:
-        # print(f"ID: {collect['id']}")
-        print(f"Task name: {collect['task_name']}")
-        print(f"Task description: {collect['task_description']}")
-        print(f"Task status: {collect['task_status']}")
-        print(f"User name: {collect['user_name']}")
-        print(f"User email: {collect['user_email']}")
+    for task in tasks:
+        print(f"ID: {task['_id']}")
+        print(f"Task name: {task['task_name']}")
+        print(f"Task description: {task['task_description']}")
+        print(f"Task status: {task['task_status']}")
+        print(f"User name: {task['user_name']}")
+        print(f"User email: {task['user_email']}")
         print("**************************************************")
 
 
 def update_task():
     task_id = input("Enter task ID: ")
     status = input("Enter task status: ")
-    update_status = mongo.update_document(task_id, status)
+    new_status = {"task_status": status}
+    update_status = mongo.update_document(task_id, new_status)
     print(f"{update_status} task(s) updated.")
+
+def delete_task():
+    task_id = input("Enter task ID, which should be deleted: ")
+    delete_count = mongo.delete_document(task_id)
+    print(f"{task_id} task removed.")
 
 
 
@@ -77,7 +82,7 @@ while True:
         update_task()
 
     if selection == 4:
-        print("Would be Delete")
+        delete_task()
 
     if selection == 5:
         exit()
